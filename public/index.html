@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pure Excellence — Slimme tools voor ondernemers | pureexcellence.be</title>
-<meta name="description" content="Pure Excellence bouwt praktische digitale tools voor Belgische ondernemers en KMOs. Ontdek LeadCalc (meer klanten via je website) en Pure Project (projectmanagement, ISO 9001 & BCM).">
+<title>Pure Excellence — Smart tools for entrepreneurs | pureexcellence.be</title>
+<meta name="description" content="Pure Excellence builds practical digital tools for Belgian entrepreneurs and SMEs. Discover LeadCalc (more clients via your website) and Pure Project (project management, ISO 9001 & BCM).">
 <meta name="keywords" content="Pure Excellence, LeadCalc, Pure Project, tools voor ondernemers, KMO software, leadgeneratie, projectmanagement België">
 <meta name="author" content="Pure Excellence BV — onderdeel van Pure Me">
 <meta name="robots" content="index, follow">
@@ -92,11 +92,17 @@ nav{position:sticky;top:0;z-index:200;background:rgba(248,245,240,.97);backdrop-
 .nav-inner{max-width:1100px;margin:0 auto;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
 .logo{font-family:var(--serif);font-size:1.35rem;font-weight:400;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:.6rem;letter-spacing:-.01em}
 .logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),#e88040);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:600;flex-shrink:0}
-.nav-links{display:flex;gap:1.8rem;align-items:center}
+.nav-links{display:flex;gap:1.4rem;align-items:center}
 .nav-links a{font-size:.85rem;color:var(--muted);text-decoration:none;font-weight:400;transition:color .15s}
 .nav-links a:hover{color:var(--ink)}
 .nav-cta{background:var(--ink)!important;color:white!important;padding:.5rem 1.4rem;border-radius:99px;font-weight:500!important;font-size:.84rem!important;transition:opacity .15s!important}
 .nav-cta:hover{opacity:.85;color:white!important}
+
+/* ── LANGUAGE TOGGLE ── */
+.lang-toggle{display:flex;align-items:center;gap:0;background:var(--cream);border:1px solid var(--border);border-radius:99px;overflow:hidden;flex-shrink:0}
+.lang-btn{background:none;border:none;padding:.3rem .75rem;font-family:var(--sans);font-size:.78rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;line-height:1}
+.lang-btn.active{background:var(--ink);color:white}
+.lang-btn:hover:not(.active){color:var(--ink)}
 
 /* ── HERO ── */
 .hero{padding:7rem 2rem 5rem;position:relative;overflow:hidden;text-align:center}
@@ -229,11 +235,12 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
   .hero{padding:4.5rem 1.2rem 3.5rem}
   .section{padding:4rem 1.2rem}
   .why-grid{grid-template-columns:1fr}
-  .nav-links{gap:1rem}
+  .nav-links{gap:.8rem}
   .footer-top{grid-template-columns:1fr 1fr}
 }
-@media(max-width:420px){
-  .nav-links a:not(.nav-cta){display:none}
+@media(max-width:480px){
+  .nav-links a:not(.nav-cta):not(.lang-toggle){display:none}
+  .lang-toggle{display:flex!important}
 }
 </style>
 </head>
@@ -242,8 +249,8 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
 <!-- ── COOKIE BANNER ── -->
 <div id="cookie-banner">
   <span style="font-size:1.3rem">🍪</span>
-  <p>Wij gebruiken enkel functionele cookies voor de werking van onze tools. Geen tracking, geen advertenties. <a href="/privacy.html">Privacybeleid</a></p>
-  <button onclick="acceptCookies()">Begrepen</button>
+  <p data-i18n="cookie_text">Wij gebruiken enkel functionele cookies voor de werking van onze tools. Geen tracking, geen advertenties. <a href="/privacy.html">Privacybeleid</a></p>
+  <button onclick="acceptCookies()" data-i18n="cookie_btn">Begrepen</button>
 </div>
 
 <!-- ── NAV ── -->
@@ -254,10 +261,14 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
       Pure Excellence
     </a>
     <div class="nav-links">
-      <a href="#producten">Producten</a>
-      <a href="#over-ons">Over ons</a>
+      <a href="#products" data-i18n="nav_products">Producten</a>
+      <a href="#about" data-i18n="nav_about">Over ons</a>
       <a href="https://www.pureme.be" target="_blank" rel="noopener">Pure Me ↗</a>
-      <a href="https://leadcalc.pureexcellence.be" class="nav-cta">Probeer gratis</a>
+      <a href="https://leadcalc.pureexcellence.be" class="nav-cta" data-i18n="nav_cta">Probeer gratis</a>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button class="lang-btn active" id="btn-nl" onclick="setLang('nl')">NL</button>
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+      </div>
     </div>
   </div>
 </nav>
@@ -265,21 +276,21 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
 <!-- ── HERO ── -->
 <section class="hero">
   <div class="hero-inner">
-    <div class="hero-badge">Onderdeel van Pure Me</div>
-    <h1>Tools die <em>écht</em> werken<br>voor jouw bedrijf</h1>
-    <p class="hero-sub">
+    <div class="hero-badge" data-i18n="hero_badge">Onderdeel van Pure Me</div>
+    <h1 data-i18n="hero_title">Tools die <em>écht</em> werken<br>voor jouw bedrijf</h1>
+    <p class="hero-sub" data-i18n="hero_sub">
       Pure Excellence bouwt <strong>praktische digitale tools</strong> voor Belgische ondernemers en KMOs —
       van meer klanten via je website tot professioneel projectmanagement en kwaliteitsbeheer.
     </p>
     <div class="hero-btns">
-      <a href="#producten" class="btn-primary">Ontdek onze tools</a>
-      <a href="https://www.pureme.be" target="_blank" rel="noopener" class="btn-ghost">Pure Me, ons moederbedrijf →</a>
+      <a href="#products" class="btn-primary" data-i18n="hero_btn_primary">Ontdek onze tools</a>
+      <a href="https://www.pureme.be" target="_blank" rel="noopener" class="btn-ghost" data-i18n="hero_btn_ghost">Pure Me, ons moederbedrijf →</a>
     </div>
     <div class="hero-trust">
-      <span><span class="trust-dot"></span> Belgisch bedrijf, Aalst</span>
+      <span><span class="trust-dot"></span> <span data-i18n="trust_1">Belgisch bedrijf, Aalst</span></span>
       <span><span class="trust-dot"></span> BTW BE0690589421</span>
-      <span><span class="trust-dot"></span> GDPR-conform</span>
-      <span><span class="trust-dot"></span> Gratis starten</span>
+      <span><span class="trust-dot"></span> <span data-i18n="trust_3">GDPR-conform</span></span>
+      <span><span class="trust-dot"></span> <span data-i18n="trust_4">Gratis starten</span></span>
     </div>
   </div>
 </section>
@@ -287,58 +298,58 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
 <!-- ── STRIP ── -->
 <div class="strip">
   <div class="strip-inner">
-    <div class="strip-item"><span>🧮</span> <strong>LeadCalc</strong> — meer aanvragen via je website</div>
+    <div class="strip-item"><span>🧮</span> <strong>LeadCalc</strong> — <span data-i18n="strip_lc">meer aanvragen via je website</span></div>
     <div class="strip-item" style="width:1px;height:24px;background:var(--border)"></div>
-    <div class="strip-item"><span>⬡</span> <strong>Pure Project</strong> — ISO 9001, BCM & projectbeheer</div>
+    <div class="strip-item"><span>⬡</span> <strong>Pure Project</strong> — <span data-i18n="strip_pp">ISO 9001, BCM & projectbeheer</span></div>
     <div class="strip-item" style="width:1px;height:24px;background:var(--border)"></div>
-    <div class="strip-item"><span>✦</span> Onderdeel van <strong>Pure Me</strong></div>
+    <div class="strip-item"><span>✦</span> <span data-i18n="strip_pureme">Onderdeel van</span> <strong>Pure Me</strong></div>
   </div>
 </div>
 
 <!-- ── PRODUCTS ── -->
-<section class="section" id="producten">
+<section class="section" id="products">
   <div class="section-inner">
-    <p class="section-label">Onze tools</p>
-    <h2 class="section-title">Twee producten,<br>één missie</h2>
-    <p class="section-sub">We bouwen tools die je werk lichter maken — niet ingewikkelder. Geen overbodige functies, geen verborgen kosten.</p>
+    <p class="section-label" data-i18n="prod_label">Onze tools</p>
+    <h2 class="section-title" data-i18n="prod_title">Twee producten,<br>één missie</h2>
+    <p class="section-sub" data-i18n="prod_sub">We bouwen tools die je werk lichter maken — niet ingewikkelder. Geen overbodige functies, geen verborgen kosten.</p>
 
     <div class="products-grid">
 
       <!-- LEADCALC -->
       <a href="https://leadcalc.pureexcellence.be" class="product-card leadcalc">
         <div class="product-icon lc">🧮</div>
-        <span class="product-tag lc">Leadgeneratie</span>
+        <span class="product-tag lc" data-i18n="lc_tag">Leadgeneratie</span>
         <h3>LeadCalc</h3>
-        <p>Zet websitebezoekers om in betalende klanten met een slimme prijscalculator. Leads automatisch in je inbox — voor elke zelfstandige of KMO, ongeacht sector.</p>
+        <p data-i18n="lc_desc">Zet websitebezoekers om in betalende klanten met een slimme prijscalculator. Leads automatisch in je inbox — voor elke zelfstandige of KMO, ongeacht sector.</p>
         <ul class="product-features lc">
-          <li>Embedbaar op elke website (1 regel code)</li>
-          <li>Leads direct in je inbox via e-mail</li>
-          <li>Koppel met Zapier, Make of je CRM</li>
-          <li>Aanpasbaar met eigen kleuren & diensten</li>
-          <li>Live dashboard met leadstatistieken</li>
+          <li data-i18n="lc_f1">Embedbaar op elke website (1 regel code)</li>
+          <li data-i18n="lc_f2">Leads direct in je inbox via e-mail</li>
+          <li data-i18n="lc_f3">Koppel met Zapier, Make of je CRM</li>
+          <li data-i18n="lc_f4">Aanpasbaar met eigen kleuren &amp; diensten</li>
+          <li data-i18n="lc_f5">Live dashboard met leadstatistieken</li>
         </ul>
         <div>
-          <span class="product-cta lc">Gratis starten →</span>
-          <p class="product-price">Gratis plan beschikbaar · Pro vanaf <strong>€19/maand</strong></p>
+          <span class="product-cta lc" data-i18n="lc_cta">Gratis starten →</span>
+          <p class="product-price" data-i18n="lc_price">Gratis plan beschikbaar · Pro vanaf <strong>€19/maand</strong></p>
         </div>
       </a>
 
       <!-- PURE PROJECT -->
       <a href="https://pure-project.pureexcellence.be" class="product-card pureproject">
         <div class="product-icon pp">⬡</div>
-        <span class="product-tag pp">Bedrijfsbeheer</span>
+        <span class="product-tag pp" data-i18n="pp_tag">Bedrijfsbeheer</span>
         <h3>Pure Project</h3>
-        <p>Alles-in-één platform voor projectmanagement, ISO 9001 kwaliteitsmanagement en ISO 22301 business continuity — speciaal gebouwd voor Belgische en Nederlandse KMOs.</p>
+        <p data-i18n="pp_desc">Alles-in-één platform voor projectmanagement, ISO 9001 kwaliteitsmanagement en ISO 22301 business continuity — speciaal gebouwd voor Belgische en Nederlandse KMOs.</p>
         <ul class="product-features pp">
-          <li>Projecten, taken & Gantt-chart</li>
-          <li>ISO 9001: non-conformiteiten & CAPA</li>
-          <li>ISO 22301: risicomatrix & BCP-templates</li>
-          <li>NL/EN tweetalig uit de doos</li>
-          <li>PDF & Excel export voor audits</li>
+          <li data-i18n="pp_f1">Projecten, taken &amp; Gantt-chart</li>
+          <li data-i18n="pp_f2">ISO 9001: non-conformiteiten &amp; CAPA</li>
+          <li data-i18n="pp_f3">ISO 22301: risicomatrix &amp; BCP-templates</li>
+          <li data-i18n="pp_f4">NL/EN tweetalig uit de doos</li>
+          <li data-i18n="pp_f5">PDF &amp; Excel export voor audits</li>
         </ul>
         <div>
-          <span class="product-cta pp">14 dagen gratis →</span>
-          <p class="product-price">Gratis proefperiode · Daarna <strong>€23,78/maand</strong></p>
+          <span class="product-cta pp" data-i18n="pp_cta">14 dagen gratis →</span>
+          <p class="product-price" data-i18n="pp_price">Gratis proefperiode · Daarna <strong>€23,78/maand</strong></p>
         </div>
       </a>
 
@@ -347,41 +358,41 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
 </section>
 
 <!-- ── ABOUT ── -->
-<section class="about" id="over-ons">
+<section class="about" id="about">
   <div class="about-inner">
     <div>
-      <p class="section-label">Over Pure Excellence</p>
-      <h2 class="section-title">Gemaakt door ondernemers,<br>voor ondernemers</h2>
-      <p style="color:var(--muted);font-size:1rem;line-height:1.75;margin-bottom:1.5rem">
+      <p class="section-label" data-i18n="about_label">Over Pure Excellence</p>
+      <h2 class="section-title" data-i18n="about_title">Gemaakt door ondernemers,<br>voor ondernemers</h2>
+      <p style="color:var(--muted);font-size:1rem;line-height:1.75;margin-bottom:1.5rem" data-i18n="about_p1">
         Pure Excellence is een Belgisch technologiebedrijf uit <strong style="color:var(--ink)">Aalst</strong>. We geloven dat goede software niet ingewikkeld hoeft te zijn. Onze tools zijn gebouwd met één doel: jouw dagelijkse werk eenvoudiger en professioneler maken.
       </p>
-      <p style="color:var(--muted);font-size:1rem;line-height:1.75;margin-bottom:2rem">
+      <p style="color:var(--muted);font-size:1rem;line-height:1.75;margin-bottom:2rem" data-i18n="about_p2">
         Wij zijn onderdeel van de <strong style="color:var(--ink)">Pure Me</strong> holding, een Belgische ondernemersgroep die praktische digitale oplossingen ontwikkelt voor zelfstandigen en KMOs.
       </p>
       <a href="https://www.pureme.be" target="_blank" rel="noopener" class="pureme-badge">
         <span class="pureme-badge-dot"></span>
-        <span>Onderdeel van <strong>Pure Me</strong> — pureme.be</span>
+        <span data-i18n="about_pureme_badge">Onderdeel van <strong>Pure Me</strong> — pureme.be</span>
         <span style="color:var(--muted)">↗</span>
       </a>
     </div>
     <div class="about-visual">
       <div class="about-box">
-        <p class="about-box-title">Pure Excellence in cijfers</p>
+        <p class="about-box-title" data-i18n="about_stats_title">Pure Excellence in cijfers</p>
         <div class="about-stat">
           <span class="about-stat-num">2</span>
-          <span class="about-stat-label">Professionele tools<br>voor ondernemers</span>
+          <span class="about-stat-label" data-i18n="about_stat1">Professionele tools<br>voor ondernemers</span>
         </div>
         <div class="about-stat">
           <span class="about-stat-num">BE</span>
-          <span class="about-stat-label">Belgisch bedrijf<br>Aalst, Oost-Vlaanderen</span>
+          <span class="about-stat-label" data-i18n="about_stat2">Belgisch bedrijf<br>Aalst, Oost-Vlaanderen</span>
         </div>
         <div class="about-stat">
           <span class="about-stat-num">ISO</span>
-          <span class="about-stat-label">9001 + 22301<br>ingebouwd in Pure Project</span>
+          <span class="about-stat-label" data-i18n="about_stat3">9001 + 22301<br>ingebouwd in Pure Project</span>
         </div>
         <div class="about-stat">
           <span class="about-stat-num">€0</span>
-          <span class="about-stat-label">Om te starten bij<br>beide tools</span>
+          <span class="about-stat-label" data-i18n="about_stat4">Om te starten bij<br>beide tools</span>
         </div>
       </div>
     </div>
@@ -391,39 +402,39 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
 <!-- ── WHY ── -->
 <section class="section">
   <div class="section-inner">
-    <p class="section-label">Waarom Pure Excellence</p>
-    <h2 class="section-title">Wat ons anders maakt</h2>
-    <p class="section-sub">We bouwen tools die je morgen al kunt gebruiken.</p>
+    <p class="section-label" data-i18n="why_label">Waarom Pure Excellence</p>
+    <h2 class="section-title" data-i18n="why_title">Wat ons anders maakt</h2>
+    <p class="section-sub" data-i18n="why_sub">We bouwen tools die je morgen al kunt gebruiken.</p>
     <div class="why-grid">
       <div class="why-card">
         <div class="why-icon">🇧🇪</div>
-        <h4>100% Belgisch</h4>
-        <p>Gemaakt in Aalst, voor Belgische en Nederlandse ondernemers. GDPR-conform, Belgisch recht, BTW inbegrepen.</p>
+        <h4 data-i18n="why1_title">100% Belgisch</h4>
+        <p data-i18n="why1_text">Gemaakt in Aalst, voor Belgische en Nederlandse ondernemers. GDPR-conform, Belgisch recht, BTW inbegrepen.</p>
       </div>
       <div class="why-card">
         <div class="why-icon">⚡</div>
-        <h4>Direct aan de slag</h4>
-        <p>Geen lange onboarding, geen sales-call. Maak een account aan en je bent vertrokken. Gratis starten bij beide tools.</p>
+        <h4 data-i18n="why2_title">Direct aan de slag</h4>
+        <p data-i18n="why2_text">Geen lange onboarding, geen sales-call. Maak een account aan en je bent vertrokken. Gratis starten bij beide tools.</p>
       </div>
       <div class="why-card">
         <div class="why-icon">💶</div>
-        <h4>Eerlijke prijzen</h4>
-        <p>Flat rates zonder verborgen kosten. Geen prijsstijging per gebruiker. Betaal enkel voor wat je gebruikt.</p>
+        <h4 data-i18n="why3_title">Eerlijke prijzen</h4>
+        <p data-i18n="why3_text">Flat rates zonder verborgen kosten. Geen prijsstijging per gebruiker. Betaal enkel voor wat je gebruikt.</p>
       </div>
       <div class="why-card">
         <div class="why-icon">🔒</div>
-        <h4>Veilig & privacyvriendelijk</h4>
-        <p>Jouw data blijft van jou. Geen tracking, geen advertenties. Servers in de EU, GDPR-conform.</p>
+        <h4 data-i18n="why4_title">Veilig &amp; privacyvriendelijk</h4>
+        <p data-i18n="why4_text">Jouw data blijft van jou. Geen tracking, geen advertenties. Servers in de EU, GDPR-conform.</p>
       </div>
       <div class="why-card">
         <div class="why-icon">📱</div>
-        <h4>Overal bereikbaar</h4>
-        <p>Werkt op elke browser, elk apparaat. Desktop, tablet of smartphone — altijd toegang tot je tools.</p>
+        <h4 data-i18n="why5_title">Overal bereikbaar</h4>
+        <p data-i18n="why5_text">Werkt op elke browser, elk apparaat. Desktop, tablet of smartphone — altijd toegang tot je tools.</p>
       </div>
       <div class="why-card">
         <div class="why-icon">🤝</div>
-        <h4>Persoonlijke support</h4>
-        <p>Vragen? Je praat met een echte persoon, geen chatbot. We antwoorden binnen 1 werkdag via e-mail.</p>
+        <h4 data-i18n="why6_title">Persoonlijke support</h4>
+        <p data-i18n="why6_text">Vragen? Je praat met een echte persoon, geen chatbot. We antwoorden binnen 1 werkdag via e-mail.</p>
       </div>
     </div>
   </div>
@@ -432,27 +443,27 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
 <!-- ── CTA ── -->
 <section class="cta-section">
   <div class="cta-inner">
-    <h2>Klaar om te starten?</h2>
-    <p>Kies het product dat bij jou past — of probeer ze allebei. Beide tools zijn gratis te starten, zonder creditcard.</p>
+    <h2 data-i18n="cta_title">Klaar om te starten?</h2>
+    <p data-i18n="cta_sub">Kies het product dat bij jou past — of probeer ze allebei. Beide tools zijn gratis te starten, zonder creditcard.</p>
   </div>
   <div class="cta-cards" style="max-width:700px;margin:0 auto">
     <a href="https://leadcalc.pureexcellence.be" class="cta-card">
       <div class="cta-card-icon">🧮</div>
       <h4>LeadCalc</h4>
-      <p>Meer klanten via je website met een slimme prijscalculator</p>
-      <span class="cta-card-arrow">Gratis starten →</span>
+      <p data-i18n="cta_lc_desc">Meer klanten via je website met een slimme prijscalculator</p>
+      <span class="cta-card-arrow" data-i18n="cta_lc_btn">Gratis starten →</span>
     </a>
     <a href="https://pure-project.pureexcellence.be" class="cta-card">
       <div class="cta-card-icon">⬡</div>
       <h4>Pure Project</h4>
-      <p>Projectmanagement, ISO 9001 & BCM in één platform</p>
-      <span class="cta-card-arrow">14 dagen gratis →</span>
+      <p data-i18n="cta_pp_desc">Projectmanagement, ISO 9001 &amp; BCM in één platform</p>
+      <span class="cta-card-arrow" data-i18n="cta_pp_btn">14 dagen gratis →</span>
     </a>
     <a href="https://www.pureme.be" target="_blank" rel="noopener" class="cta-card">
       <div class="cta-card-icon">✦</div>
       <h4>Pure Me</h4>
-      <p>Ontdek het moederbedrijf en alle initiatieven</p>
-      <span class="cta-card-arrow">Bezoek pureme.be →</span>
+      <p data-i18n="cta_pm_desc">Ontdek het moederbedrijf en alle initiatieven</p>
+      <span class="cta-card-arrow" data-i18n="cta_pm_btn">Bezoek pureme.be →</span>
     </a>
   </div>
 </section>
@@ -466,39 +477,39 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
           <div class="logo-mark">✦</div>
           Pure Excellence
         </a>
-        <p>Slimme digitale tools voor Belgische ondernemers en KMOs. Onderdeel van de Pure Me holding.</p>
+        <p data-i18n="footer_tagline">Slimme digitale tools voor Belgische ondernemers en KMOs. Onderdeel van de Pure Me holding.</p>
         <div style="margin-top:1.2rem;font-size:.78rem;color:rgba(255,255,255,.3)">
           📍 Aalst, Oost-Vlaanderen, België<br>
           ✉️ <a href="mailto:sales@pureexcellence.be" style="color:rgba(255,255,255,.4);text-decoration:none">sales@pureexcellence.be</a>
         </div>
       </div>
       <div class="footer-col">
-        <h5>Producten</h5>
+        <h5 data-i18n="footer_col1">Producten</h5>
         <a href="https://leadcalc.pureexcellence.be">LeadCalc</a>
         <a href="https://pure-project.pureexcellence.be">Pure Project</a>
-        <a href="https://leadcalc.pureexcellence.be/#pricing">Prijzen LeadCalc</a>
-        <a href="https://pure-project.pureexcellence.be/#pricing">Prijzen Pure Project</a>
+        <a href="https://leadcalc.pureexcellence.be/#pricing" data-i18n="footer_lc_pricing">Prijzen LeadCalc</a>
+        <a href="https://pure-project.pureexcellence.be/#pricing" data-i18n="footer_pp_pricing">Prijzen Pure Project</a>
       </div>
       <div class="footer-col">
-        <h5>Bedrijf</h5>
-        <a href="#over-ons">Over Pure Excellence</a>
-        <a href="https://www.pureme.be" target="_blank" rel="noopener">Pure Me (moederbedrijf)</a>
-        <a href="mailto:sales@pureexcellence.be">Contact</a>
-        <a href="mailto:support@pureexcellence.be">Support</a>
+        <h5 data-i18n="footer_col2">Bedrijf</h5>
+        <a href="#about" data-i18n="footer_about">Over Pure Excellence</a>
+        <a href="https://www.pureme.be" target="_blank" rel="noopener" data-i18n="footer_pureme">Pure Me (moederbedrijf)</a>
+        <a href="mailto:sales@pureexcellence.be" data-i18n="footer_contact">Contact</a>
+        <a href="mailto:support@pureexcellence.be" data-i18n="footer_support">Support</a>
       </div>
       <div class="footer-col">
-        <h5>Juridisch</h5>
-        <a href="/privacy.html">Privacybeleid</a>
-        <a href="/terms.html">Gebruiksvoorwaarden</a>
-        <a href="/privacy.html#cookies">Cookiebeleid</a>
+        <h5 data-i18n="footer_col3">Juridisch</h5>
+        <a href="/privacy.html" data-i18n="footer_privacy">Privacybeleid</a>
+        <a href="/terms.html" data-i18n="footer_terms">Gebruiksvoorwaarden</a>
+        <a href="/privacy.html#cookies" data-i18n="footer_cookies">Cookiebeleid</a>
       </div>
     </div>
     <div class="footer-bottom">
       <div class="footer-legal">
-        © <span id="year"></span> Pure Excellence BV — Onderdeel van <a href="https://www.pureme.be" target="_blank" rel="noopener">Pure Me</a><br>
+        © <span id="year"></span> Pure Excellence BV — <span data-i18n="footer_part_of">Onderdeel van</span> <a href="https://www.pureme.be" target="_blank" rel="noopener">Pure Me</a><br>
         <span style="color:rgba(255,255,255,.25)">Aalst, België · </span>
-        <a href="/privacy.html">Privacybeleid</a> ·
-        <a href="/terms.html">Gebruiksvoorwaarden</a>
+        <a href="/privacy.html" data-i18n="footer_privacy">Privacybeleid</a> ·
+        <a href="/terms.html" data-i18n="footer_terms">Gebruiksvoorwaarden</a>
       </div>
       <div class="footer-vat">BTW BE0690589421</div>
     </div>
@@ -506,17 +517,213 @@ footer{background:var(--ink);color:rgba(255,255,255,.55);padding:3.5rem 2rem 2re
 </footer>
 
 <script>
-// Year
+// ── TRANSLATIONS ──
+const translations = {
+  nl: {
+    cookie_text: 'Wij gebruiken enkel functionele cookies voor de werking van onze tools. Geen tracking, geen advertenties. <a href="/privacy.html">Privacybeleid</a>',
+    cookie_btn: 'Begrepen',
+    nav_products: 'Producten',
+    nav_about: 'Over ons',
+    nav_cta: 'Probeer gratis',
+    hero_badge: 'Onderdeel van Pure Me',
+    hero_title: 'Tools die <em>écht</em> werken<br>voor jouw bedrijf',
+    hero_sub: 'Pure Excellence bouwt <strong>praktische digitale tools</strong> voor Belgische ondernemers en KMOs — van meer klanten via je website tot professioneel projectmanagement en kwaliteitsbeheer.',
+    hero_btn_primary: 'Ontdek onze tools',
+    hero_btn_ghost: 'Pure Me, ons moederbedrijf →',
+    trust_1: 'Belgisch bedrijf, Aalst',
+    trust_3: 'GDPR-conform',
+    trust_4: 'Gratis starten',
+    strip_lc: 'meer aanvragen via je website',
+    strip_pp: 'ISO 9001, BCM & projectbeheer',
+    strip_pureme: 'Onderdeel van',
+    prod_label: 'Onze tools',
+    prod_title: 'Twee producten,<br>één missie',
+    prod_sub: 'We bouwen tools die je werk lichter maken — niet ingewikkelder. Geen overbodige functies, geen verborgen kosten.',
+    lc_tag: 'Leadgeneratie',
+    lc_desc: 'Zet websitebezoekers om in betalende klanten met een slimme prijscalculator. Leads automatisch in je inbox — voor elke zelfstandige of KMO, ongeacht sector.',
+    lc_f1: 'Embedbaar op elke website (1 regel code)',
+    lc_f2: 'Leads direct in je inbox via e-mail',
+    lc_f3: 'Koppel met Zapier, Make of je CRM',
+    lc_f4: 'Aanpasbaar met eigen kleuren & diensten',
+    lc_f5: 'Live dashboard met leadstatistieken',
+    lc_cta: 'Gratis starten →',
+    lc_price: 'Gratis plan beschikbaar · Pro vanaf <strong>€19/maand</strong>',
+    pp_tag: 'Bedrijfsbeheer',
+    pp_desc: 'Alles-in-één platform voor projectmanagement, ISO 9001 kwaliteitsmanagement en ISO 22301 business continuity — speciaal gebouwd voor Belgische en Nederlandse KMOs.',
+    pp_f1: 'Projecten, taken & Gantt-chart',
+    pp_f2: 'ISO 9001: non-conformiteiten & CAPA',
+    pp_f3: 'ISO 22301: risicomatrix & BCP-templates',
+    pp_f4: 'NL/EN tweetalig uit de doos',
+    pp_f5: 'PDF & Excel export voor audits',
+    pp_cta: '14 dagen gratis →',
+    pp_price: 'Gratis proefperiode · Daarna <strong>€23,78/maand</strong>',
+    about_label: 'Over Pure Excellence',
+    about_title: 'Gemaakt door ondernemers,<br>voor ondernemers',
+    about_p1: 'Pure Excellence is een Belgisch technologiebedrijf uit <strong style="color:var(--ink)">Aalst</strong>. We geloven dat goede software niet ingewikkeld hoeft te zijn. Onze tools zijn gebouwd met één doel: jouw dagelijkse werk eenvoudiger en professioneler maken.',
+    about_p2: 'Wij zijn onderdeel van de <strong style="color:var(--ink)">Pure Me</strong> holding, een Belgische ondernemersgroep die praktische digitale oplossingen ontwikkelt voor zelfstandigen en KMOs.',
+    about_pureme_badge: 'Onderdeel van <strong>Pure Me</strong> — pureme.be',
+    about_stats_title: 'Pure Excellence in cijfers',
+    about_stat1: 'Professionele tools<br>voor ondernemers',
+    about_stat2: 'Belgisch bedrijf<br>Aalst, Oost-Vlaanderen',
+    about_stat3: '9001 + 22301<br>ingebouwd in Pure Project',
+    about_stat4: 'Om te starten bij<br>beide tools',
+    why_label: 'Waarom Pure Excellence',
+    why_title: 'Wat ons anders maakt',
+    why_sub: 'We bouwen tools die je morgen al kunt gebruiken.',
+    why1_title: '100% Belgisch',
+    why1_text: 'Gemaakt in Aalst, voor Belgische en Nederlandse ondernemers. GDPR-conform, Belgisch recht, BTW inbegrepen.',
+    why2_title: 'Direct aan de slag',
+    why2_text: 'Geen lange onboarding, geen sales-call. Maak een account aan en je bent vertrokken. Gratis starten bij beide tools.',
+    why3_title: 'Eerlijke prijzen',
+    why3_text: 'Flat rates zonder verborgen kosten. Geen prijsstijging per gebruiker. Betaal enkel voor wat je gebruikt.',
+    why4_title: 'Veilig & privacyvriendelijk',
+    why4_text: 'Jouw data blijft van jou. Geen tracking, geen advertenties. Servers in de EU, GDPR-conform.',
+    why5_title: 'Overal bereikbaar',
+    why5_text: 'Werkt op elke browser, elk apparaat. Desktop, tablet of smartphone — altijd toegang tot je tools.',
+    why6_title: 'Persoonlijke support',
+    why6_text: 'Vragen? Je praat met een echte persoon, geen chatbot. We antwoorden binnen 1 werkdag via e-mail.',
+    cta_title: 'Klaar om te starten?',
+    cta_sub: 'Kies het product dat bij jou past — of probeer ze allebei. Beide tools zijn gratis te starten, zonder creditcard.',
+    cta_lc_desc: 'Meer klanten via je website met een slimme prijscalculator',
+    cta_lc_btn: 'Gratis starten →',
+    cta_pp_desc: 'Projectmanagement, ISO 9001 & BCM in één platform',
+    cta_pp_btn: '14 dagen gratis →',
+    cta_pm_desc: 'Ontdek het moederbedrijf en alle initiatieven',
+    cta_pm_btn: 'Bezoek pureme.be →',
+    footer_tagline: 'Slimme digitale tools voor Belgische ondernemers en KMOs. Onderdeel van de Pure Me holding.',
+    footer_col1: 'Producten',
+    footer_col2: 'Bedrijf',
+    footer_col3: 'Juridisch',
+    footer_lc_pricing: 'Prijzen LeadCalc',
+    footer_pp_pricing: 'Prijzen Pure Project',
+    footer_about: 'Over Pure Excellence',
+    footer_pureme: 'Pure Me (moederbedrijf)',
+    footer_contact: 'Contact',
+    footer_support: 'Support',
+    footer_privacy: 'Privacybeleid',
+    footer_terms: 'Gebruiksvoorwaarden',
+    footer_cookies: 'Cookiebeleid',
+    footer_part_of: 'Onderdeel van',
+  },
+  en: {
+    cookie_text: 'We only use functional cookies for the operation of our tools. No tracking, no ads. <a href="/privacy.html">Privacy policy</a>',
+    cookie_btn: 'Got it',
+    nav_products: 'Products',
+    nav_about: 'About',
+    nav_cta: 'Try for free',
+    hero_badge: 'Part of Pure Me',
+    hero_title: 'Tools that <em>actually</em> work<br>for your business',
+    hero_sub: 'Pure Excellence builds <strong>practical digital tools</strong> for Belgian entrepreneurs and SMEs — from generating more leads via your website to professional project management and quality control.',
+    hero_btn_primary: 'Discover our tools',
+    hero_btn_ghost: 'Pure Me, our parent company →',
+    trust_1: 'Belgian company, Aalst',
+    trust_3: 'GDPR compliant',
+    trust_4: 'Free to start',
+    strip_lc: 'more enquiries via your website',
+    strip_pp: 'ISO 9001, BCM & project management',
+    strip_pureme: 'Part of',
+    prod_label: 'Our tools',
+    prod_title: 'Two products,<br>one mission',
+    prod_sub: 'We build tools that make your work easier — not more complicated. No bloat, no hidden costs.',
+    lc_tag: 'Lead generation',
+    lc_desc: 'Convert website visitors into paying clients with a smart pricing calculator. Leads delivered automatically to your inbox — for any freelancer or SME, any sector.',
+    lc_f1: 'Embeddable on any website (1 line of code)',
+    lc_f2: 'Leads delivered directly to your inbox',
+    lc_f3: 'Integrate with Zapier, Make or your CRM',
+    lc_f4: 'Customisable with your own colours & services',
+    lc_f5: 'Live dashboard with lead statistics',
+    lc_cta: 'Start for free →',
+    lc_price: 'Free plan available · Pro from <strong>€19/month</strong>',
+    pp_tag: 'Business management',
+    pp_desc: 'All-in-one platform for project management, ISO 9001 quality management and ISO 22301 business continuity — built specifically for Belgian and Dutch SMEs.',
+    pp_f1: 'Projects, tasks & Gantt chart',
+    pp_f2: 'ISO 9001: non-conformities & CAPA',
+    pp_f3: 'ISO 22301: risk matrix & BCP templates',
+    pp_f4: 'NL/EN bilingual out of the box',
+    pp_f5: 'PDF & Excel export for audits',
+    pp_cta: '14 days free →',
+    pp_price: 'Free trial · Then <strong>€23.78/month</strong>',
+    about_label: 'About Pure Excellence',
+    about_title: 'Built by entrepreneurs,<br>for entrepreneurs',
+    about_p1: 'Pure Excellence is a Belgian technology company based in <strong style="color:var(--ink)">Aalst</strong>. We believe good software does not have to be complicated. Our tools are built with one goal: making your daily work simpler and more professional.',
+    about_p2: 'We are part of the <strong style="color:var(--ink)">Pure Me</strong> holding, a Belgian entrepreneurial group developing practical digital solutions for freelancers and SMEs.',
+    about_pureme_badge: 'Part of <strong>Pure Me</strong> — pureme.be',
+    about_stats_title: 'Pure Excellence by the numbers',
+    about_stat1: 'Professional tools<br>for entrepreneurs',
+    about_stat2: 'Belgian company<br>Aalst, East Flanders',
+    about_stat3: '9001 + 22301<br>built into Pure Project',
+    about_stat4: 'To get started with<br>both tools',
+    why_label: 'Why Pure Excellence',
+    why_title: 'What makes us different',
+    why_sub: 'We build tools you can start using tomorrow.',
+    why1_title: '100% Belgian',
+    why1_text: 'Made in Aalst, for Belgian and Dutch entrepreneurs. GDPR compliant, Belgian law, VAT included.',
+    why2_title: 'Up and running instantly',
+    why2_text: 'No lengthy onboarding, no sales call. Create an account and you are ready to go. Free to start with both tools.',
+    why3_title: 'Fair pricing',
+    why3_text: 'Flat rates with no hidden costs. No per-user price increases. Pay only for what you use.',
+    why4_title: 'Secure & privacy-friendly',
+    why4_text: 'Your data stays yours. No tracking, no ads. EU-based servers, GDPR compliant.',
+    why5_title: 'Available everywhere',
+    why5_text: 'Works in any browser, on any device. Desktop, tablet or smartphone — always access to your tools.',
+    why6_title: 'Personal support',
+    why6_text: 'Questions? You talk to a real person, not a chatbot. We respond within 1 business day by email.',
+    cta_title: 'Ready to get started?',
+    cta_sub: 'Choose the product that suits you — or try both. Both tools are free to start, no credit card required.',
+    cta_lc_desc: 'More clients via your website with a smart pricing calculator',
+    cta_lc_btn: 'Start for free →',
+    cta_pp_desc: 'Project management, ISO 9001 & BCM in one platform',
+    cta_pp_btn: '14 days free →',
+    cta_pm_desc: 'Discover the parent company and all initiatives',
+    cta_pm_btn: 'Visit pureme.be →',
+    footer_tagline: 'Smart digital tools for Belgian entrepreneurs and SMEs. Part of the Pure Me holding.',
+    footer_col1: 'Products',
+    footer_col2: 'Company',
+    footer_col3: 'Legal',
+    footer_lc_pricing: 'LeadCalc pricing',
+    footer_pp_pricing: 'Pure Project pricing',
+    footer_about: 'About Pure Excellence',
+    footer_pureme: 'Pure Me (parent company)',
+    footer_contact: 'Contact',
+    footer_support: 'Support',
+    footer_privacy: 'Privacy policy',
+    footer_terms: 'Terms of service',
+    footer_cookies: 'Cookie policy',
+    footer_part_of: 'Part of',
+  }
+};
+
+// ── APPLY LANGUAGE ──
+function setLang(lang) {
+  const t = translations[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+  document.documentElement.lang = lang === 'nl' ? 'nl' : 'en';
+  document.getElementById('btn-nl').classList.toggle('active', lang === 'nl');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  // Update anchor for products section
+  document.querySelector('a[href="#products"]') && null;
+  localStorage.setItem('pe-lang', lang);
+}
+
+// ── INIT ──
 document.getElementById('year').textContent = new Date().getFullYear();
 
 // Cookie banner
-function acceptCookies(){
-  localStorage.setItem('pe-cookies','ok');
-  document.getElementById('cookie-banner').style.display='none';
+function acceptCookies() {
+  localStorage.setItem('pe-cookies', 'ok');
+  document.getElementById('cookie-banner').style.display = 'none';
 }
-if(localStorage.getItem('pe-cookies')==='ok'){
-  document.getElementById('cookie-banner').style.display='none';
+if (localStorage.getItem('pe-cookies') === 'ok') {
+  document.getElementById('cookie-banner').style.display = 'none';
 }
+
+// Load saved language
+const savedLang = localStorage.getItem('pe-lang');
+const browserLang = navigator.language.startsWith('nl') ? 'nl' : 'en';
+setLang(savedLang || browserLang);
 </script>
 </body>
 </html>
