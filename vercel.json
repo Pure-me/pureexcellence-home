@@ -1,19 +1,13 @@
 {
   "version": 2,
-  "name": "pureexcellence",
-  "routes": [
-    { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
-    { "src": "/robots.txt",  "dest": "/robots.txt"  },
-    { "src": "/(.*)",        "dest": "/$1"           }
-  ],
+  "outputDirectory": ".",
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options",    "value": "nosniff" },
-        { "key": "X-Frame-Options",           "value": "SAMEORIGIN" },
-        { "key": "X-XSS-Protection",          "value": "1; mode=block" },
-        { "key": "Referrer-Policy",           "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
       ]
     },
@@ -25,9 +19,5 @@
       "source": "/public/js/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
     }
-  ],
-  "redirects": [
-    { "source": "/contact",  "destination": "/#contact",  "permanent": true },
-    { "source": "/diensten", "destination": "/#services", "permanent": true }
   ]
 }
