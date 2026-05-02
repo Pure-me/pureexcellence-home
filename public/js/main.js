@@ -1,61 +1,37 @@
-/* ============================================================
-   Pure Excellence — Hoofdscript v2.1
-   ============================================================ */
+/* Pure Excellence — main.js v2.2 */
 
 let currentLang = localStorage.getItem('pe-lang') || 'nl';
-
-/* Elementen die innerHTML vereisen */
-const HTML_TAGS = ['H1', 'H2'];
-const HTML_CLASSES = ['hero-title', 'about-quote', 'hero-sub', 'highlight'];
-
-function needsHTML(el, text) {
-  if (HTML_TAGS.includes(el.tagName)) return true;
-  for (const c of HTML_CLASSES) { if (el.classList.contains(c)) return true; }
-  if (text.includes('<') || text.includes('&')) return true;
-  return false;
-}
 
 function setLang(lang) {
   currentLang = lang;
   localStorage.setItem('pe-lang', lang);
   document.documentElement.lang = lang;
 
-  /* Taalknop stijl */
-  ['btn-nl','btn-nl-m'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('active', lang === 'nl');
-  });
-  ['btn-en','btn-en-m'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.toggle('active', lang === 'en');
+  /* Taalknop actief */
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.id === 'btn-' + lang || btn.id === 'btn-' + lang + '-m');
   });
 
-  /* Alle vertaalbare elementen */
+  /* Vertaal elk element met data-nl attribuut */
   document.querySelectorAll('[data-nl]').forEach(el => {
-    const text = el.getAttribute('data-' + lang);
-    if (!text) return;
+    const val = el.getAttribute('data-' + lang);
+    if (val === null) return;
 
-    if (el.tagName === 'OPTION') {
-      el.textContent = text;
-    } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      /* Niets doen — placeholder apart behandeld */
-    } else if (needsHTML(el, text)) {
-      el.innerHTML = text;
-    } else {
-      el.textContent = text;
-    }
+    const tag = el.tagName;
+
+    /* Select opties */
+    if (tag === 'OPTION') { el.textContent = val; return; }
+
+    /* Input placeholder: apart attribuut */
+    if (tag === 'INPUT' || tag === 'TEXTAREA') { return; }
+
+    /* Alles met HTML-inhoud (br, em, aanhalingstekens, ...) => innerHTML */
+    el.innerHTML = val;
   });
 
   /* Placeholders */
-  document.querySelectorAll('[data-placeholder-nl]').forEach(el => {
-    const ph = el.getAttribute('data-placeholder-' + lang);
-    if (ph) el.placeholder = ph;
-  });
-
-  /* Button teksten */
-  document.querySelectorAll('button[data-nl]').forEach(el => {
-    const text = el.getAttribute('data-' + lang);
-    if (text) el.textContent = text;
+  document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(el => {
+    el.placeholder = el.getAttribute('data-placeholder-' + lang);
   });
 }
 
@@ -64,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => { setLang(currentLang); });
 /* Nav scroll */
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('navbar');
-  if (nav) nav.classList.toggle('scrolled', scrollY > 20);
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 20);
 });
 
 /* Mobiel menu */
@@ -133,7 +109,6 @@ function submitForm() {
     elErr.style.display = 'block';
     return;
   }
-
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
     elErr.textContent = currentLang === 'en'
       ? 'Please enter a valid email address.'
@@ -141,12 +116,8 @@ function submitForm() {
     elErr.style.display = 'block';
     return;
   }
-
-  const body = encodeURIComponent(
-    `Name: ${fn} ${ln}\nCompany: ${co}\nSubject: ${su}\n\n${ms}`
-  );
+  const body = encodeURIComponent(`Name: ${fn} ${ln}\nCompany: ${co}\nSubject: ${su}\n\n${ms}`);
   window.location.href = `mailto:info@pureexcellence.be?subject=${encodeURIComponent(su + ' via Pure Excellence')}&body=${body}`;
-
   elOk.textContent = currentLang === 'en'
     ? '✓ Thank you for your message. We will personally get back to you within 2 working days.'
     : '✓ Bedankt voor uw bericht. Wij nemen binnen 2 werkdagen persoonlijk contact met u op.';
