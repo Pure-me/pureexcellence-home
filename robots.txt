@@ -1,5 +1,8 @@
 User-agent: *
 Allow: /
-Disallow: /api/
 
+# Sitemap locatie
 Sitemap: https://www.pureexcellence.be/sitemap.xml
+
+# Crawl-delay voor beleefdheid
+Crawl-delay: 1
