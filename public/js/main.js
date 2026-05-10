@@ -1,4 +1,4 @@
-/* Pure Excellence — main.js v2.2 */
+/* Pure Excellence — main.js v2.3 */
 
 let currentLang = localStorage.getItem('pe-lang') || 'nl';
 
@@ -7,29 +7,18 @@ function setLang(lang) {
   localStorage.setItem('pe-lang', lang);
   document.documentElement.lang = lang;
 
-  /* Taalknop actief */
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.id === 'btn-' + lang || btn.id === 'btn-' + lang + '-m');
   });
 
-  /* Vertaal elk element met data-nl attribuut */
   document.querySelectorAll('[data-nl]').forEach(el => {
     const val = el.getAttribute('data-' + lang);
     if (val === null) return;
-
-    const tag = el.tagName;
-
-    /* Select opties */
-    if (tag === 'OPTION') { el.textContent = val; return; }
-
-    /* Input placeholder: apart attribuut */
-    if (tag === 'INPUT' || tag === 'TEXTAREA') { return; }
-
-    /* Alles met HTML-inhoud (br, em, aanhalingstekens, ...) => innerHTML */
+    if (el.tagName === 'OPTION') { el.textContent = val; return; }
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') return;
     el.innerHTML = val;
   });
 
-  /* Placeholders */
   document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(el => {
     el.placeholder = el.getAttribute('data-placeholder-' + lang);
   });
@@ -37,17 +26,14 @@ function setLang(lang) {
 
 document.addEventListener('DOMContentLoaded', () => { setLang(currentLang); });
 
-/* Nav scroll */
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('navbar');
   if (nav) nav.classList.toggle('scrolled', window.scrollY > 20);
 });
 
-/* Mobiel menu */
 function toggleM() { document.getElementById('mm').classList.toggle('open'); }
 function closeM()  { document.getElementById('mm').classList.remove('open'); }
 
-/* Legale pagina's */
 function showPage(page) {
   document.getElementById('main').classList.add('hidden');
   document.querySelectorAll('.legal-page').forEach(x => x.classList.remove('active'));
@@ -62,7 +48,6 @@ function showMain() {
   closeM();
 }
 
-/* Soepel scrollen */
 document.addEventListener('click', function(e) {
   const a = e.target.closest('a[href^="#"]');
   if (!a) return;
@@ -76,7 +61,6 @@ document.addEventListener('click', function(e) {
   }
 });
 
-/* Fade-up animaties */
 const observer = new IntersectionObserver((entries) => {
   entries.forEach((entry, i) => {
     if (entry.isIntersecting) {
@@ -87,8 +71,8 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-/* Contactformulier */
-function submitForm() {
+/* Contactformulier via Resend API */
+async function submitForm() {
   const fn = document.getElementById('fn').value.trim();
   const ln = document.getElementById('ln').value.trim();
   const em = document.getElementById('em').value.trim();
@@ -98,6 +82,7 @@ function submitForm() {
   const co = document.getElementById('co').value.trim();
   const elOk  = document.getElementById('fok');
   const elErr = document.getElementById('ferr');
+  const btn   = document.querySelector('.cform .btn-primary');
 
   elOk.style.display  = 'none';
   elErr.style.display = 'none';
@@ -109,6 +94,7 @@ function submitForm() {
     elErr.style.display = 'block';
     return;
   }
+
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
     elErr.textContent = currentLang === 'en'
       ? 'Please enter a valid email address.'
@@ -116,10 +102,43 @@ function submitForm() {
     elErr.style.display = 'block';
     return;
   }
-  const body = encodeURIComponent(`Name: ${fn} ${ln}\nCompany: ${co}\nSubject: ${su}\n\n${ms}`);
-  window.location.href = `mailto:info@pureexcellence.be?subject=${encodeURIComponent(su + ' via Pure Excellence')}&body=${body}`;
-  elOk.textContent = currentLang === 'en'
-    ? '✓ Thank you for your message. We will personally get back to you within 2 working days.'
-    : '✓ Bedankt voor uw bericht. Wij nemen binnen 2 werkdagen persoonlijk contact met u op.';
-  elOk.style.display = 'block';
+
+  /* Knop uitschakelen tijdens verzending */
+  btn.textContent = currentLang === 'en' ? 'Sending...' : 'Versturen...';
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+
+  try {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fn, ln, em, co, su, ms })
+    });
+
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      elOk.textContent = currentLang === 'en'
+        ? '✓ Thank you for your message. We will personally get back to you within 2 working days.'
+        : '✓ Bedankt voor uw bericht. Wij nemen binnen 2 werkdagen persoonlijk contact met u op.';
+      elOk.style.display = 'block';
+      /* Formulier leegmaken */
+      ['fn','ln','em','co','su','ms'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.getElementById('co2').checked = false;
+    } else {
+      throw new Error(data.error || 'Onbekende fout');
+    }
+  } catch (err) {
+    elErr.textContent = currentLang === 'en'
+      ? 'Something went wrong. Please send us an email directly at info@pureexcellence.be'
+      : 'Er ging iets mis. Stuur ons een e-mail op info@pureexcellence.be';
+    elErr.style.display = 'block';
+  } finally {
+    btn.textContent = currentLang === 'en' ? 'Send message →' : 'Verstuur bericht →';
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
 }
