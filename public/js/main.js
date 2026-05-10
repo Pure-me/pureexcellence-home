@@ -1,4 +1,4 @@
-/* Pure Excellence — main.js v2.4 — EmailJS */
+/* Pure Excellence — main.js v2.5 */
 
 let currentLang = localStorage.getItem('pe-lang') || 'nl';
 
@@ -6,11 +6,9 @@ function setLang(lang) {
   currentLang = lang;
   localStorage.setItem('pe-lang', lang);
   document.documentElement.lang = lang;
-
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.classList.toggle('active', btn.id === 'btn-' + lang || btn.id === 'btn-' + lang + '-m');
   });
-
   document.querySelectorAll('[data-nl]').forEach(el => {
     const val = el.getAttribute('data-' + lang);
     if (val === null) return;
@@ -18,16 +16,12 @@ function setLang(lang) {
     if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') return;
     el.innerHTML = val;
   });
-
   document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(el => {
     el.placeholder = el.getAttribute('data-placeholder-' + lang);
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  setLang(currentLang);
-  emailjs.init('XVdPeDzgrfbrzUJc1');
-});
+document.addEventListener('DOMContentLoaded', () => { setLang(currentLang); });
 
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('navbar');
@@ -74,8 +68,7 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-/* Contactformulier via EmailJS */
-async function submitForm() {
+function submitForm() {
   const fn = document.getElementById('fn').value.trim();
   const ln = document.getElementById('ln').value.trim();
   const em = document.getElementById('em').value.trim();
@@ -85,7 +78,6 @@ async function submitForm() {
   const co = document.getElementById('co').value.trim();
   const elOk  = document.getElementById('fok');
   const elErr = document.getElementById('ferr');
-  const btn   = document.querySelector('.cform .btn-primary');
 
   elOk.style.display  = 'none';
   elErr.style.display = 'none';
@@ -106,43 +98,14 @@ async function submitForm() {
     return;
   }
 
-  btn.textContent = currentLang === 'en' ? 'Sending...' : 'Versturen...';
-  btn.disabled = true;
-  btn.style.opacity = '0.7';
+  const body = encodeURIComponent(
+    `Naam: ${fn} ${ln}\nBedrijf: ${co || 'niet opgegeven'}\nOnderwerp: ${su}\n\n${ms}\n\nReply-to: ${em}`
+  );
+  const subject = encodeURIComponent(`${su} via Pure Excellence`);
+  window.location.href = `mailto:info@pureexcellence.be?subject=${subject}&body=${body}`;
 
-  try {
-    await emailjs.send(
-      'service_ftwzxj',
-      'template_zxdcki4',
-      {
-        name:    `${fn} ${ln}`,
-        email:   em,
-        company: co || 'Niet opgegeven',
-        subject: su,
-        message: ms
-      }
-    );
-
-    elOk.textContent = currentLang === 'en'
-      ? '✓ Thank you for your message. We will personally get back to you within 2 working days.'
-      : '✓ Bedankt voor uw bericht. Wij nemen binnen 2 werkdagen persoonlijk contact met u op.';
-    elOk.style.display = 'block';
-
-    ['fn','ln','em','co','su','ms'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    document.getElementById('co2').checked = false;
-
-  } catch (err) {
-    console.error('EmailJS error:', err);
-    elErr.textContent = currentLang === 'en'
-      ? 'Something went wrong. Please email us directly at info@pureexcellence.be'
-      : 'Er ging iets mis. Stuur ons een e-mail op info@pureexcellence.be';
-    elErr.style.display = 'block';
-  } finally {
-    btn.textContent = currentLang === 'en' ? 'Send message →' : 'Verstuur bericht →';
-    btn.disabled = false;
-    btn.style.opacity = '1';
-  }
+  elOk.textContent = currentLang === 'en'
+    ? '✓ Your email client has opened. Please send the message to complete your request.'
+    : '✓ Uw e-mailprogramma is geopend. Verstuur de e-mail om uw bericht te verzenden.';
+  elOk.style.display = 'block';
 }
