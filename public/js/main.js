@@ -24,7 +24,10 @@ function setLang(lang) {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => { setLang(currentLang); });
+document.addEventListener('DOMContentLoaded', () => {
+  setLang(currentLang);
+  emailjs.init('XVdPeDzgrfbrzUJc1');
+});
 
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('navbar');
