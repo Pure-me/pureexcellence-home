@@ -26,7 +26,7 @@ function setLang(lang) {
 
 document.addEventListener('DOMContentLoaded', () => {
   setLang(currentLang);
-  emailjs.init('XVdPeDzgrfbrzUJc1');
+  emailjs.init({ publicKey: 'XVdPeDzgrfbrzUJc1' });
 });
 
 window.addEventListener('scroll', () => {
@@ -120,8 +120,7 @@ async function submitForm() {
         company: co || 'Niet opgegeven',
         subject: su,
         message: ms
-      },
-      'XVdPeDzgrfbrzUJc1'
+      }
     );
 
     elOk.textContent = currentLang === 'en'
