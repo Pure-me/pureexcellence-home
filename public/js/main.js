@@ -26,7 +26,7 @@ function setLang(lang) {
 
 document.addEventListener('DOMContentLoaded', () => {
   setLang(currentLang);
-  emailjs.init({ publicKey: 'XVdPeDzgrfbrzUJc1' });
+  emailjs.init('XVdPeDzgrfbrzUJc1');
 });
 
 window.addEventListener('scroll', () => {
