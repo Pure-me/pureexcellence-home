@@ -1,4 +1,4 @@
-/* Pure Excellence — main.js v2.3 */
+/* Pure Excellence — main.js v2.4 — EmailJS */
 
 let currentLang = localStorage.getItem('pe-lang') || 'nl';
 
@@ -71,7 +71,7 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
 
-/* Contactformulier via Resend API */
+/* Contactformulier via EmailJS */
 async function submitForm() {
   const fn = document.getElementById('fn').value.trim();
   const ln = document.getElementById('ln').value.trim();
@@ -103,37 +103,39 @@ async function submitForm() {
     return;
   }
 
-  /* Knop uitschakelen tijdens verzending */
   btn.textContent = currentLang === 'en' ? 'Sending...' : 'Versturen...';
   btn.disabled = true;
   btn.style.opacity = '0.7';
 
   try {
-    const response = await fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fn, ln, em, co, su, ms })
+    await emailjs.send(
+      'service_ftwzxj',
+      'template_zxdcki4',
+      {
+        name:    `${fn} ${ln}`,
+        email:   em,
+        company: co || 'Niet opgegeven',
+        subject: su,
+        message: ms
+      },
+      'XVdPeDzgrfbrzUJc1'
+    );
+
+    elOk.textContent = currentLang === 'en'
+      ? '✓ Thank you for your message. We will personally get back to you within 2 working days.'
+      : '✓ Bedankt voor uw bericht. Wij nemen binnen 2 werkdagen persoonlijk contact met u op.';
+    elOk.style.display = 'block';
+
+    ['fn','ln','em','co','su','ms'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
     });
+    document.getElementById('co2').checked = false;
 
-    const data = await response.json();
-
-    if (response.ok && data.success) {
-      elOk.textContent = currentLang === 'en'
-        ? '✓ Thank you for your message. We will personally get back to you within 2 working days.'
-        : '✓ Bedankt voor uw bericht. Wij nemen binnen 2 werkdagen persoonlijk contact met u op.';
-      elOk.style.display = 'block';
-      /* Formulier leegmaken */
-      ['fn','ln','em','co','su','ms'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-      document.getElementById('co2').checked = false;
-    } else {
-      throw new Error(data.error || 'Onbekende fout');
-    }
   } catch (err) {
+    console.error('EmailJS error:', err);
     elErr.textContent = currentLang === 'en'
-      ? 'Something went wrong. Please send us an email directly at info@pureexcellence.be'
+      ? 'Something went wrong. Please email us directly at info@pureexcellence.be'
       : 'Er ging iets mis. Stuur ons een e-mail op info@pureexcellence.be';
     elErr.style.display = 'block';
   } finally {
